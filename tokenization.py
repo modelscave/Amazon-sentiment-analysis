@@ -3,6 +3,7 @@ import re
 import pandas as pd
 import numpy as np
 from transformers import AutoTokenizer
+from sklearn.model_selection import train_test_split
 from datasets import Dataset
 
 file_path = '/home/admin1/Project/Amazon Review/Data/train.ft.txt.bz2'
@@ -36,11 +37,13 @@ print(df_train.head())
 df_test = pd.DataFrame({'label': labels_1, 'text': texts_1})
 print(df_test.head())
 
-# Load tokenizer
+df_train, df_val = train_test_split(df_train, test_size=0.2, random_state=42)
+
 tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 
 # Convert pandas to Dataset
 train_dataset = Dataset.from_pandas(df_train)
+val_dataset = Dataset.from_pandas(df_val)
 test_dataset = Dataset.from_pandas(df_test)
 
 # Tokenize function
@@ -49,12 +52,19 @@ def tokenize_function(examples):
 
 # Tokenize with batching and multiprocessing
 tokenized_train = train_dataset.map(tokenize_function, batched=True)
+tokenized_val = val_dataset.map(tokenize_function, batched=True)
 tokenized_test = test_dataset.map(tokenize_function, batched=True)
 
+tokenized_train = tokenized_train.rename_column("label", "labels")
+tokenized_val = tokenized_val.rename_column("label", "labels")
+tokenized_test = tokenized_test.rename_column("label", "labels")
+
 # Optionally remove unnecessary columns
-tokenized_train = tokenized_train.remove_columns(['text'])
+tokenized_train = tokenized_train.remove_columns(['text','__index_level_0__'])
+tokenized_val = tokenized_val.remove_columns(['text','__index_level_0__'])
 tokenized_test = tokenized_test.remove_columns(['text'])
 
 # Save
-tokenized_train.save_to_disk('tokenized_train_1')
-tokenized_test.save_to_disk('tokenized_test_1')
+tokenized_train.save_to_disk('/content/drive/MyDrive/tokenized_train')
+tokenized_val.save_to_disk('/content/drive/MyDrive/tokenized_val')
+tokenized_test.save_to_disk('/content/drive/MyDrive/tokenized_test')
