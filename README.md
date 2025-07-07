@@ -1,0 +1,3 @@
+Here we are trying to crete a model to predict sentiment for given text. The dataset used is amazon reviews dataset taken from kaggle this data set has two labels -  postive and negative sentiment. We are doing some preprecessing on data like tokenization and TFIDF vectorization for dataset and then we are using some basic models on the processed data to get results. Im upcoming updates you can get to see new methodologies like tranformers being applied to the data for setiment analysis. You can also spot some of the EDA done on data before creating model which is telling us to use more complex techniques to seperate our sentiments.
+
+If any sujjestions are there please contact me at yash.shingare2412@gmail.com
